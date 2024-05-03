@@ -17,7 +17,7 @@ public class Menu {
     }
 
     private static void displayMenu() {
-        System.out.println("\n\n\nWelcome to XML Parser IO.Menu");
+        System.out.println("\n\nWelcome to XML Parser IO.Menu");
         System.out.println("----------------------------");
         System.out.println("1. Open");
         System.out.println("2. Close");
