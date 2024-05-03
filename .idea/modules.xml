@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+<<<<<<< Updated upstream
       <module fileurl="file://$PROJECT_DIR$/XML Parser.iml" filepath="$PROJECT_DIR$/XML Parser.iml" />
+=======
+      <module fileurl="file://$PROJECT_DIR$/.idea/22621618.iml" filepath="$PROJECT_DIR$/.idea/22621618.iml" />
+>>>>>>> Stashed changes
     </modules>
   </component>
 </project>
