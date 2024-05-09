@@ -1,6 +1,6 @@
 package IO;
 
-import IO.*;
+
 
 import java.util.Scanner;
 
@@ -17,14 +17,15 @@ public class Menu {
     }
 
     private static void displayMenu() {
-        System.out.println("\n\nWelcome to XML Parser IO.Menu");
+        System.out.println("Welcome to XML Parser Menu");
         System.out.println("----------------------------");
         System.out.println("1. Open");
         System.out.println("2. Close");
         System.out.println("3. Save");
         System.out.println("4. Save As");
         System.out.println("5. Help");
-        System.out.println("6. Exit");
+        System.out.println("6. Create XML");
+        System.out.println("7. Exit");
         System.out.println("----------------------------");
         System.out.print("Enter your choice: ");
 
@@ -64,6 +65,9 @@ public class Menu {
                 break;
             case HELP:
                 commandHandler = new Help();
+                break;
+            case CREATE_XML:
+                commandHandler = new CreateXML();
                 break;
             case EXIT:
                 commandHandler = new Exit();
