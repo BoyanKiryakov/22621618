@@ -1,81 +1,58 @@
 package IO;
 
-
-
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
-
 
 public class Menu {
     static String currentFile = null;
     static boolean fileLoaded = false;
+    static XMLElement rootElement = null;
     static Scanner scanner = new Scanner(System.in);
-
-
+    static Map<String, CommandHandler> commands = new HashMap<>();
 
     public static void main(String[] args) {
+        initializeCommands();
         displayMenu();
+    }
+
+    private static void initializeCommands() {
+        commands.put("open", new OpenFile());
+        commands.put("close", new CloseFile());
+        commands.put("save", new SaveFile());
+        commands.put("saveas", new SaveFileAs());
+        commands.put("help", new Help());
+        commands.put("createxml", new CreateXML());
+        commands.put("exit", new Exit());
     }
 
     private static void displayMenu() {
         System.out.println("Welcome to XML Parser Menu");
         System.out.println("----------------------------");
-        System.out.println("1. Open");
-        System.out.println("2. Close");
-        System.out.println("3. Save");
-        System.out.println("4. Save As");
-        System.out.println("5. Help");
-        System.out.println("6. Create XML");
-        System.out.println("7. Exit");
+        System.out.println("Available commands:");
+        System.out.println("open");
+        System.out.println("close");
+        System.out.println("save");
+        System.out.println("saveas");
+        System.out.println("help");
+        System.out.println("createxml");
+        System.out.println("exit");
         System.out.println("----------------------------");
-        System.out.print("Enter your choice: ");
+        System.out.print("Enter your command: ");
 
-        Command choice = getCommand();
-        handleChoice(choice);
+        handleChoice();
     }
 
-    private static Command getCommand() {
-        while (true) {
-            try {
-                int choice = Integer.parseInt(scanner.nextLine());
-                if (choice < 1 || choice > Command.values().length) {
-                    throw new IllegalArgumentException();
-                }
-                return Command.values()[choice - 1];
-            } catch (IllegalArgumentException e) {
-                System.out.println("Invalid input. Please enter a valid command number.");
-                System.out.print("Enter your choice: ");
-            }
-        }
-    }
+    private static void handleChoice() {
+        String input = scanner.nextLine().trim().toLowerCase();
+        CommandHandler commandHandler = commands.get(input);
 
-    private static void handleChoice(Command choice) {
-        CommandHandler commandHandler = null;
-        switch (choice) {
-            case OPEN:
-                commandHandler = new OpenFile();
-                break;
-            case CLOSE:
-                commandHandler = new CloseFile();
-                break;
-            case SAVE:
-                commandHandler = new SaveFile();
-                break;
-            case SAVE_AS:
-                commandHandler = new SaveFileAs();
-                break;
-            case HELP:
-                commandHandler = new Help();
-                break;
-            case CREATE_XML:
-                commandHandler = new CreateXML();
-                break;
-            case EXIT:
-                commandHandler = new Exit();
-                break;
-        }
         if (commandHandler != null) {
             commandHandler.execute();
+        } else {
+            System.out.println("Invalid command. Please enter a valid command.");
         }
+
         displayMenu();
     }
 }

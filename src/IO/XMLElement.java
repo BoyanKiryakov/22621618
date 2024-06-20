@@ -1,6 +1,8 @@
 package IO;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class XMLElement {
     private String name;
     private String value;

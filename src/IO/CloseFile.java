@@ -1,7 +1,5 @@
 package IO;
 
-import java.awt.*;
-
 public class CloseFile implements CommandHandler{
     @Override
     public void execute() {
