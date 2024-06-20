@@ -1,21 +1,40 @@
 package IO;
 
-import java.io.File;
+import java.util.Scanner;
 
 public class CreateXML implements CommandHandler {
 
     @Override
     public void execute() {
         System.out.println("Executing Create XML command...");
-        String defaultDirectory = System.getProperty("user.dir");
-        String defaultFilePath = defaultDirectory + File.separator + "default.xml";
-        XMLFileHandler.createXMLFileInteractive(defaultFilePath);
+        Menu.rootElement = new XMLElement("people", "");
 
-        Menu.rootElement = XMLFileHandler.parseXML(defaultFilePath);
-        if (Menu.rootElement != null) {
-            System.out.println("XML content loaded into memory.");
-        } else {
-            System.out.println("Failed to load XML content into memory.");
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.print("Enter person ID (or 'done' to finish): ");
+            String personID = scanner.nextLine().trim();
+            if (personID.equalsIgnoreCase("done")) {
+                break;
+            }
+
+            System.out.print("Enter person name: ");
+            String personName = scanner.nextLine().trim();
+
+            System.out.print("Enter person age: ");
+            String personAge = scanner.nextLine().trim();
+
+            System.out.print("Enter person address: ");
+            String personAddress = scanner.nextLine().trim();
+
+            XMLElement personElement = new XMLElement("person", "");
+            personElement.addAttribute("ID", personID);
+            personElement.addChild(new XMLElement("name", personName));
+            personElement.addChild(new XMLElement("age", personAge));
+            personElement.addChild(new XMLElement("address", personAddress));
+
+            Menu.rootElement.addChild(personElement);
         }
+
+        System.out.println("XML content created in memory.");
     }
 }
