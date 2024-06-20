@@ -1,13 +1,20 @@
 package IO;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class CreateXML implements CommandHandler {
 
+    private Map<String, Integer> idCountMap = new HashMap<>();
+
     @Override
     public void execute() {
         System.out.println("Executing Create XML command...");
-        Menu.rootElement = new XMLElement("people", "");
+
+        if (Menu.rootElement == null) {
+            Menu.rootElement = new XMLElement("people", "");
+        }
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -16,6 +23,9 @@ public class CreateXML implements CommandHandler {
             if (personID.equalsIgnoreCase("done")) {
                 break;
             }
+
+            // Handle unique ID logic
+            String uniqueID = generateUniqueID(personID);
 
             System.out.print("Enter person name: ");
             String personName = scanner.nextLine().trim();
@@ -27,7 +37,7 @@ public class CreateXML implements CommandHandler {
             String personAddress = scanner.nextLine().trim();
 
             XMLElement personElement = new XMLElement("person", "");
-            personElement.addAttribute("ID", personID);
+            personElement.addAttribute("ID", uniqueID);
             personElement.addChild(new XMLElement("name", personName));
             personElement.addChild(new XMLElement("age", personAge));
             personElement.addChild(new XMLElement("address", personAddress));
@@ -35,6 +45,21 @@ public class CreateXML implements CommandHandler {
             Menu.rootElement.addChild(personElement);
         }
 
-        System.out.println("XML content created in memory.");
+        System.out.println("XML content updated in memory.");
+    }
+
+    private String generateUniqueID(String baseID) {
+        if (baseID == null || baseID.isEmpty()) {
+            baseID = "generatedID";
+        }
+
+        if (!idCountMap.containsKey(baseID)) {
+            idCountMap.put(baseID, 0);
+            return baseID;
+        } else {
+            int count = idCountMap.get(baseID) + 1;
+            idCountMap.put(baseID, count);
+            return baseID + "_" + count;
+        }
     }
 }

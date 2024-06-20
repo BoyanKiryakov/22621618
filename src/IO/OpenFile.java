@@ -28,10 +28,10 @@ public class OpenFile implements CommandHandler {
             String fileContent = readFromFile(defaultFilePath);
             if (fileContent != null) {
                 System.out.println("File opened successfully.");
-                System.out.println("File content:");
-                System.out.println(fileContent);
                 Menu.currentFile = defaultFilePath;
                 Menu.fileLoaded = true;
+                CommandHandler printHandler = new PrintFile();
+                printHandler.execute();
             } else {
                 System.out.println("Failed to read file content: " + defaultFilePath);
                 Menu.currentFile = null;

@@ -14,6 +14,7 @@ public class Menu {
     public static void main(String[] args) {
         initializeCommands();
         displayMenu();
+        handleChoice();
     }
 
     private static void initializeCommands() {
@@ -23,6 +24,7 @@ public class Menu {
         commands.put("saveas", new SaveFileAs());
         commands.put("help", new Help());
         commands.put("createxml", new CreateXML());
+        commands.put("print", new PrintFile());
         commands.put("exit", new Exit());
     }
 
@@ -36,23 +38,33 @@ public class Menu {
         System.out.println("saveas");
         System.out.println("help");
         System.out.println("createxml");
+        System.out.println("print");
         System.out.println("exit");
         System.out.println("----------------------------");
-        System.out.print("Enter your command: ");
-
-        handleChoice();
     }
 
     private static void handleChoice() {
-        String input = scanner.nextLine().trim().toLowerCase();
-        CommandHandler commandHandler = commands.get(input);
+        while (true) {
+            System.out.print("Enter your command: ");
+            String input = scanner.nextLine().trim().toLowerCase();
+            CommandHandler commandHandler = commands.get(input);
 
-        if (commandHandler != null) {
-            commandHandler.execute();
-        } else {
-            System.out.println("Invalid command. Please enter a valid command.");
+            if (commandHandler != null) {
+                commandHandler.execute();
+                if (input.equals("exit")) {
+                    break;
+                }
+            } else {
+                System.out.println("Invalid command. Please enter a valid command.");
+            }
+
+            promptForNextAction();
         }
+    }
 
+    private static void promptForNextAction() {
+        System.out.println("\nPress Enter to continue...");
+        scanner.nextLine();
         displayMenu();
     }
 }

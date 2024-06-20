@@ -77,4 +77,3 @@ public class XMLElement {
         return xml.toString();
     }
 }
-
