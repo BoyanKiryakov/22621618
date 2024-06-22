@@ -1,6 +1,8 @@
-package IO;
+package Commands;
 
-public class Exit implements CommandHandler{
+import Structure.CommandHandler;
+
+public class Exit implements CommandHandler {
     @Override
     public void execute() {
         System.out.println("Executing Exit command...");

@@ -1,6 +1,9 @@
-package IO;
+package Commands;
 
-public class CloseFile implements CommandHandler{
+import Structure.CommandHandler;
+import Menu.Menu;
+
+public class CloseFile implements CommandHandler {
     @Override
     public void execute() {
         System.out.println("Executing Close command...");

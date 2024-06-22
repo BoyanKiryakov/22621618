@@ -1,6 +1,8 @@
-package IO;
+package Commands;
 
-public class Help implements CommandHandler{
+import Structure.CommandHandler;
+
+public class Help implements CommandHandler {
     @Override
     public void execute() {
         System.out.println("Executing Help command...");

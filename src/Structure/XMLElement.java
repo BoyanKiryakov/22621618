@@ -1,4 +1,4 @@
-package IO;
+package Structure;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,14 +8,14 @@ import java.util.Map;
 public class XMLElement {
     private String name;
     private String value;
-    private List<XMLElement> children;
     private Map<String, String> attributes;
+    private List<XMLElement> children;
 
     public XMLElement(String name, String value) {
         this.name = name;
         this.value = value;
-        this.children = new ArrayList<>();
         this.attributes = new HashMap<>();
+        this.children = new ArrayList<>();
     }
 
     public String getName() {
@@ -38,40 +38,40 @@ public class XMLElement {
         return children;
     }
 
-    public void addAttribute(String key, String value) {
+    public void setAttribute(String key, String value) {
         attributes.put(key, value);
+    }
+
+    public String getAttribute(String key) {
+        return attributes.get(key);
+    }
+
+    public void removeAttribute(String key) {
+        attributes.remove(key);
     }
 
     @Override
     public String toString() {
-        return toString(0);
-    }
-
-    private String toString(int indentLevel) {
-        StringBuilder xml = new StringBuilder();
-        String indent = "    ".repeat(indentLevel);
-
-        xml.append(indent).append("<").append(name);
+        StringBuilder xml = new StringBuilder("<" + name);
 
         for (Map.Entry<String, String> entry : attributes.entrySet()) {
             xml.append(" ").append(entry.getKey()).append("=\"").append(entry.getValue()).append("\"");
         }
 
-        if (value == null || value.isEmpty() && children.isEmpty()) {
-            xml.append("/>\n");
+        if (children.isEmpty() && (value == null || value.isEmpty())) {
+            xml.append("/>");
         } else {
-            xml.append(">");
+            xml.append(">\n");
+
             if (value != null && !value.isEmpty()) {
-                xml.append(value);
+                xml.append(value).append("\n");
             }
-            if (!children.isEmpty()) {
-                xml.append("\n");
-                for (XMLElement child : children) {
-                    xml.append(child.toString(indentLevel + 1));
-                }
-                xml.append(indent);
+
+            for (XMLElement child : children) {
+                xml.append(child.toString());
             }
-            xml.append("</").append(name).append(">\n");
+
+            xml.append("</").append(name).append(">");
         }
 
         return xml.toString();

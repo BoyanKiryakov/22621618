@@ -1,4 +1,7 @@
-package IO;
+package Commands;
+import Structure.CommandHandler;
+import Menu.Menu;
+
 import java.io.FileWriter;
 import java.io.IOException;
 

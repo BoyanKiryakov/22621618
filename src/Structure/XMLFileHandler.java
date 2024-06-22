@@ -1,4 +1,4 @@
-package IO;
+package Structure;
 
 import java.io.*;
 import java.util.Scanner;
@@ -27,6 +27,7 @@ public class XMLFileHandler {
                 System.out.print("Enter person address: ");
                 String personAddress = scanner.nextLine().trim();
 
+
                 StringBuilder personElement = new StringBuilder();
                 personElement.append("\t<person ID=\"").append(personID).append("\">\n");
                 personElement.append("\t\t<name>").append(personName).append("</name>\n");
@@ -51,11 +52,47 @@ public class XMLFileHandler {
             while ((line = reader.readLine()) != null) {
                 xmlContent.append(line).append("\n");
             }
-            String content = xmlContent.toString();
-            return new XMLElement("people", content);
+            return parseXMLElement(xmlContent.toString());
         } catch (IOException e) {
             System.out.println("Error reading XML file: " + e.getMessage());
         }
         return null;
+    }
+
+    private static XMLElement parseXMLElement(String content) {
+        if (content.contains("<people>")) {
+            XMLElement root = new XMLElement("people", null);
+            int startIndex = content.indexOf("<person");
+            while (startIndex != -1) {
+                int endIndex = content.indexOf("</person>", startIndex) + "</person>".length();
+                String personContent = content.substring(startIndex, endIndex);
+
+                int idStart = personContent.indexOf("ID=\"") + 4;
+                int idEnd = personContent.indexOf("\"", idStart);
+                String personID = personContent.substring(idStart, idEnd);
+
+                String personName = extractTagValue(personContent, "name");
+                String personAge = extractTagValue(personContent, "age");
+                String personAddress = extractTagValue(personContent, "address");
+
+                XMLElement person = new XMLElement("person", null);
+                person.setAttribute("ID", personID);
+                person.addChild(new XMLElement("name", personName));
+                person.addChild(new XMLElement("age", personAge));
+                person.addChild(new XMLElement("address", personAddress));
+
+                root.addChild(person);
+
+                startIndex = content.indexOf("<person", endIndex);
+            }
+            return root;
+        }
+        return null;
+    }
+
+    private static String extractTagValue(String content, String tagName) {
+        int startIndex = content.indexOf("<" + tagName + ">") + tagName.length() + 2;
+        int endIndex = content.indexOf("</" + tagName + ">", startIndex);
+        return content.substring(startIndex, endIndex);
     }
 }

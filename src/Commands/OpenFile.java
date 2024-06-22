@@ -1,4 +1,8 @@
-package IO;
+package Commands;
+
+import Structure.CommandHandler;
+import Menu.Menu;
+import Structure.XMLFileHandler;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,7 +16,7 @@ public class OpenFile implements CommandHandler {
         System.out.println("Executing Open command...");
 
         String defaultDirectory = System.getProperty("user.dir");
-        String defaultFilePath = defaultDirectory + File.separator + "default.xml";
+        String defaultFilePath = defaultDirectory + "/default.xml";
 
         File file = new File(defaultFilePath);
         try {
@@ -28,10 +32,17 @@ public class OpenFile implements CommandHandler {
             String fileContent = readFromFile(defaultFilePath);
             if (fileContent != null) {
                 System.out.println("File opened successfully.");
+                System.out.println("File content:");
+                System.out.println(fileContent);
                 Menu.currentFile = defaultFilePath;
                 Menu.fileLoaded = true;
-                CommandHandler printHandler = new PrintFile();
-                printHandler.execute();
+
+                Menu.rootElement = XMLFileHandler.parseXML(defaultFilePath);
+                if (Menu.rootElement != null) {
+                    System.out.println("XML parsed successfully.");
+                } else {
+                    System.out.println("Failed to parse XML.");
+                }
             } else {
                 System.out.println("Failed to read file content: " + defaultFilePath);
                 Menu.currentFile = null;

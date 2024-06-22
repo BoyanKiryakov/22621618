@@ -1,4 +1,4 @@
-package IO;
+package Structure;
 
 public interface CommandHandler {
     void execute();
