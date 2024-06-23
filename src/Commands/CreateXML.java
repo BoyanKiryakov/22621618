@@ -14,11 +14,9 @@ public class CreateXML implements CommandHandler {
 
     @Override
     public void execute() {
-        System.out.println("Executing Create XML command...");
-        String defaultDirectory = System.getProperty("user.dir");
-        String defaultFilePath = defaultDirectory + "/default.xml";
+        System.out.println("Creating XML file...");
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(defaultFilePath))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("default.xml"))) {
             writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
             writer.write("<people>\n");
 
@@ -51,18 +49,10 @@ public class CreateXML implements CommandHandler {
             }
 
             writer.write("</people>");
-            System.out.println("XML file created successfully: " + defaultFilePath);
+            System.out.println("XML file created successfully: default.xml");
 
         } catch (IOException e) {
             System.out.println("Error creating XML file: " + e.getMessage());
-        }
-
-        XMLElement rootElement = XMLFileHandler.parseXML(defaultFilePath);
-        if (rootElement != null) {
-            Menu.rootElement = rootElement;
-            System.out.println("XML structure loaded successfully.");
-        } else {
-            System.out.println("Failed to load XML structure.");
         }
     }
 }

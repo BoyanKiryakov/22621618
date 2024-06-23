@@ -2,31 +2,21 @@ package Commands;
 
 import Structure.CommandHandler;
 import Menu.Menu;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import Structure.XMLElement;
 
 public class PrintFile implements CommandHandler {
-
     @Override
     public void execute() {
-        if (Menu.currentFile != null && !Menu.currentFile.isEmpty()) {
-            printFileContents(Menu.currentFile);
-        } else {
-            System.out.println("No file is currently open.");
-        }
-    }
+        System.out.println("Executing Print command...");
 
-    public void printFileContents(String filePath) {
-        System.out.println("Printing file contents...");
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading file: " + e.getMessage());
+        // Check if a file is currently loaded
+        if (!Menu.fileLoaded || Menu.rootElement == null) {
+            System.out.println("No file is currently open or no XML content found.");
+            return;
         }
+
+        // Print the XML structure from the root element
+        String xmlString = Menu.rootElement.toXMLString();
+        System.out.println(xmlString);
     }
 }

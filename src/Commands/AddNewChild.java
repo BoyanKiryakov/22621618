@@ -10,42 +10,27 @@ public class AddNewChild implements CommandHandler {
 
     @Override
     public void execute() {
-        System.out.println("Executing Add New Child command...");
+        System.out.println("Executing AddNewChild command...");
 
-        if (Menu.rootElement != null) {
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Enter the ID of the parent element: ");
-            String id = scanner.nextLine().trim();
-
-            XMLElement parentElement = findElementById(Menu.rootElement, id);
-            if (parentElement != null) {
-                XMLElement newChild = createNewChildElement();
-                parentElement.addChild(newChild);
-                System.out.println("New child element added successfully to element with ID '" + id + "'.");
-            } else {
-                System.out.println("Element with ID '" + id + "' not found.");
-            }
-        } else {
-            System.out.println("No XML structure loaded. Use 'createxml' or 'open' command first.");
+        // Check if XML structure is loaded
+        if (!Menu.fileLoaded || Menu.rootElement == null) {
+            System.out.println("No file is currently open or no XML content found.");
+            return;
         }
-    }
 
-    private XMLElement createNewChildElement() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter the name for the new child element: ");
-        String name = scanner.nextLine().trim();
-        System.out.print("Enter the value for the new child element: ");
-        String value = scanner.nextLine().trim();
-        return new XMLElement(name, value);
-    }
 
-    private XMLElement findElementById(XMLElement element, String id) {
-        if (element == null) return null;
-        if (id.equals(element.getAttribute("ID"))) return element;
-        for (XMLElement child : element.getChildren()) {
-            XMLElement foundElement = findElementById(child, id);
-            if (foundElement != null) return foundElement;
-        }
-        return null;
+        // Ask for the ID of the new person
+        System.out.print("Enter ID for the new person: ");
+        String id = scanner.nextLine().trim();
+
+        // Create a new XMLElement for the person
+        XMLElement newPerson = new XMLElement("person", null);
+        newPerson.setAttribute("ID", id);
+
+        // Add the new person as a child to the root <people> element
+        Menu.rootElement.addChild(newPerson);
+
+        System.out.println("New person with ID '" + id + "' added.");
     }
 }

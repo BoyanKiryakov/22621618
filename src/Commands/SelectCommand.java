@@ -1,55 +1,51 @@
 package Commands;
 
 import Structure.CommandHandler;
-import Menu.Menu;
 import Structure.XMLElement;
+import Utils.XMLElementUtils;
+import Menu.Menu;
 
 import java.util.Scanner;
 
 public class SelectCommand implements CommandHandler {
-
     @Override
     public void execute() {
-        Scanner scanner = new Scanner(System.in);
-
         System.out.println("Executing Select command...");
 
-        if (Menu.rootElement != null) {
-            System.out.print("Enter the ID of the element to select: ");
-            String id = scanner.nextLine().trim();
+        // Check if XML structure is loaded
+        if (!Menu.fileLoaded || Menu.rootElement == null) {
+            System.out.println("No file is currently open or no XML content found.");
+            return;
+        }
 
-            System.out.print("Enter the attribute key to select: ");
-            String key = scanner.nextLine().trim();
+        Scanner scanner = new Scanner(System.in);
 
-            XMLElement selectedElement = findElementById(Menu.rootElement, id);
+        // Ask for element ID
+        System.out.print("Enter element ID: ");
+        String elementID = scanner.nextLine().trim();
 
-            if (selectedElement != null) {
-                String attributeValue = selectedElement.getAttribute(key);
-                if (attributeValue != null) {
-                    System.out.println("Attribute value found: " + attributeValue);
-                } else {
-                    System.out.println("Attribute '" + key + "' not found for element with ID '" + id + "'.");
-                }
+        // Ask for attribute key
+        System.out.print("Enter attribute key: ");
+        String attributeKey = scanner.nextLine().trim();
+
+        // Find the element with the specified ID
+        XMLElement selectedElement = XMLElementUtils.findElementByID(Menu.rootElement, elementID);
+
+        if (selectedElement != null) {
+            // Extract the entire element content as a string
+            String elementContent = selectedElement.toXMLString();
+
+            // Use pattern matching to find the attribute value
+            String attributeValue = XMLElementUtils.extractAttributeFromElement(elementContent, attributeKey);
+
+            if (attributeValue != null) {
+                System.out.println("Attribute value of '" + attributeKey + "' for element with ID '" + elementID + "': " + attributeValue);
             } else {
-                System.out.println("Element with ID '" + id + "' not found.");
+                System.out.println("Attribute '" + attributeKey + "' not found for element with ID '" + elementID + "'.");
+                System.out.println("Available attributes for element with ID '" + elementID + "': " + selectedElement.getAttributes());
             }
         } else {
-            System.out.println("No XML structure loaded. Use 'createxml' or 'open' command first.");
+            System.out.println("Element with ID '" + elementID + "' not found.");
         }
-    }
-
-    private XMLElement findElementById(XMLElement element, String id) {
-        if (element.getAttribute("ID") != null && element.getAttribute("ID").equals(id)) {
-            return element;
-        }
-
-        for (XMLElement child : element.getChildren()) {
-            XMLElement foundElement = findElementById(child, id);
-            if (foundElement != null) {
-                return foundElement;
-            }
-        }
-
-        return null;
     }
 }

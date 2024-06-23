@@ -10,35 +10,47 @@ public class AccessChild implements CommandHandler {
 
     @Override
     public void execute() {
-        System.out.println("Executing Access Child command...");
+        System.out.println("Executing AccessChild command...");
 
-        if (Menu.rootElement != null) {
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Enter the ID of the parent element: ");
-            String id = scanner.nextLine().trim();
+        // Check if XML structure is loaded
+        if (!Menu.fileLoaded || Menu.rootElement == null) {
+            System.out.println("No file is currently open or no XML content found.");
+            return;
+        }
 
-            XMLElement parentElement = findElementById(Menu.rootElement, id);
-            if (parentElement != null) {
-                System.out.print("Enter the index of the child element: ");
-                int index = scanner.nextInt();
-                scanner.nextLine(); // Consume newline character
+        Scanner scanner = new Scanner(System.in);
 
-                if (index >= 0 && index < parentElement.getChildren().size()) {
-                    XMLElement childElement = parentElement.getChildren().get(index);
-                    System.out.println("Child element " + index + ":");
-                    System.out.println(childElement.toString());
-                } else {
-                    System.out.println("Invalid child index.");
-                }
-            } else {
-                System.out.println("Element with ID '" + id + "' not found.");
-            }
+        // Ask for element ID
+        System.out.print("Enter element ID: ");
+        String elementID = scanner.nextLine().trim();
+
+        // Find the element with the specified ID
+        XMLElement element = findElementById(elementID, Menu.rootElement);
+
+        if (element == null) {
+            System.out.println("Element with ID '" + elementID + "' not found.");
         } else {
-            System.out.println("No XML structure loaded. Use 'createxml' or 'open' command first.");
+            // Ask for child index
+            System.out.print("Enter index of the child (starting from 1): ");
+            int childIndex = scanner.nextInt();
+            scanner.nextLine(); // Consume newline character
+
+            // Access and print the child element at the specified index
+            accessChildAtIndex(element, childIndex);
         }
     }
 
-    private XMLElement findElementById(XMLElement element, String id) {
+    private void accessChildAtIndex(XMLElement element, int index) {
+        if (index < 1 || index > element.getChildren().size()) {
+            System.out.println("Invalid child index.");
+        } else {
+            XMLElement child = element.getChildren().get(index - 1);
+            String childValue = child.getTextContent().trim();
+            System.out.println("Child at index " + index + ": <" + child.getName() + "> " + childValue);
+        }
+    }
+
+    private XMLElement findElementById(String id, XMLElement element) {
         if (element == null) {
             return null;
         }
@@ -48,9 +60,9 @@ public class AccessChild implements CommandHandler {
         }
 
         for (XMLElement child : element.getChildren()) {
-            XMLElement foundElement = findElementById(child, id);
-            if (foundElement != null) {
-                return foundElement;
+            XMLElement found = findElementById(id, child);
+            if (found != null) {
+                return found;
             }
         }
 

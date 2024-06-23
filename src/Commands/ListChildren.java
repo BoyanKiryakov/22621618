@@ -10,42 +10,57 @@ public class ListChildren implements CommandHandler {
 
     @Override
     public void execute() {
-        System.out.println("Executing List Children command...");
+        System.out.println("Executing ListChildren command...");
 
-        if (Menu.rootElement != null) {
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Enter the ID of the parent element to list children: ");
-            String id = scanner.nextLine().trim();
+        // Check if XML structure is loaded
+        if (!Menu.fileLoaded || Menu.rootElement == null) {
+            System.out.println("No file is currently open or no XML content found.");
+            return;
+        }
 
-            XMLElement parentElement = findElementById(Menu.rootElement, id);
-            if (parentElement != null) {
-                listChildrenElements(parentElement);
-            } else {
-                System.out.println("Element with ID '" + id + "' not found.");
-            }
+        Scanner scanner = new Scanner(System.in);
+
+        // Ask for element ID
+        System.out.print("Enter element ID: ");
+        String elementID = scanner.nextLine().trim();
+
+        // Find the element with the specified ID
+        XMLElement element = findElementById(elementID, Menu.rootElement);
+
+        if (element == null) {
+            System.out.println("Element with ID '" + elementID + "' not found.");
         } else {
-            System.out.println("No XML structure loaded. Use 'createxml' or 'open' command first.");
+            listChildren(element);
         }
     }
 
-    private void listChildrenElements(XMLElement element) {
+    private void listChildren(XMLElement element) {
         if (element.getChildren().isEmpty()) {
-            System.out.println("No children found for element with ID '" + element.getAttribute("ID") + "'.");
+            System.out.println("Element with ID '" + element.getAttribute("ID") + "' has no children.");
         } else {
             System.out.println("Children of element with ID '" + element.getAttribute("ID") + "':");
             for (XMLElement child : element.getChildren()) {
-                System.out.println("\t- " + child.getName());
+                System.out.println("\t<" + child.getName() + ">");
             }
         }
     }
 
-    private XMLElement findElementById(XMLElement element, String id) {
-        if (element == null) return null;
-        if (id.equals(element.getAttribute("ID"))) return element;
-        for (XMLElement child : element.getChildren()) {
-            XMLElement foundElement = findElementById(child, id);
-            if (foundElement != null) return foundElement;
+    private XMLElement findElementById(String id, XMLElement element) {
+        if (element == null) {
+            return null;
         }
+
+        if (id.equals(element.getAttribute("ID"))) {
+            return element;
+        }
+
+        for (XMLElement child : element.getChildren()) {
+            XMLElement found = findElementById(id, child);
+            if (found != null) {
+                return found;
+            }
+        }
+
         return null;
     }
 }

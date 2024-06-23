@@ -2,71 +2,51 @@ package Commands;
 
 import Structure.CommandHandler;
 import Menu.Menu;
+import Structure.XMLElement;
 import Structure.XMLFileHandler;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 
 public class OpenFile implements CommandHandler {
 
     @Override
     public void execute() {
-        System.out.println("Executing Open command...");
-
-        String defaultDirectory = System.getProperty("user.dir");
-        String defaultFilePath = defaultDirectory + "/default.xml";
-
+        String defaultFilePath = "default.xml"; // Adjust this to your actual default file path
         File file = new File(defaultFilePath);
-        try {
-            if (!file.exists()) {
-                if (file.createNewFile()) {
-                    System.out.println("New file created: " + defaultFilePath);
-                } else {
-                    System.out.println("Failed to create new file: " + defaultFilePath);
+
+        if (!file.exists()) {
+            System.out.println("Default XML file does not exist: " + defaultFilePath);
+            // Call the CreateXML command handler to create a new default.xml file
+            CommandHandler createXmlCommand = Menu.commands.get("createxml");
+            if (createXmlCommand != null) {
+                createXmlCommand.execute(); // Execute the CreateXML command
+                // Now attempt to load the file again
+                file = new File(defaultFilePath); // Update the file reference after creation
+                if (!file.exists()) {
+                    System.out.println("Failed to create XML file: " + defaultFilePath);
                     return;
                 }
-            }
-
-            String fileContent = readFromFile(defaultFilePath);
-            if (fileContent != null) {
-                System.out.println("File opened successfully.");
-                System.out.println("File content:");
-                System.out.println(fileContent);
-                Menu.currentFile = defaultFilePath;
-                Menu.fileLoaded = true;
-
-                Menu.rootElement = XMLFileHandler.parseXML(defaultFilePath);
-                if (Menu.rootElement != null) {
-                    System.out.println("XML parsed successfully.");
-                } else {
-                    System.out.println("Failed to parse XML.");
-                }
             } else {
-                System.out.println("Failed to read file content: " + defaultFilePath);
-                Menu.currentFile = null;
-                Menu.fileLoaded = false;
+                System.out.println("CreateXML command not found. Cannot create XML file.");
+                return;
             }
-
-        } catch (IOException e) {
-            System.out.println("Error creating/opening the file: " + e.getMessage());
-            Menu.currentFile = null;
-            Menu.fileLoaded = false;
         }
-    }
 
-    private String readFromFile(String filePath) {
-        StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line).append("\n");
+        try {
+            // Parse the XML file
+            XMLElement rootElement = XMLFileHandler.parseXML(defaultFilePath);
+
+            if (rootElement != null) {
+                Menu.rootElement = rootElement;  // Store the root element in Menu for access throughout the program
+                Menu.fileLoaded = true;          // Mark that a file is successfully loaded
+                Menu.currentFile = defaultFilePath;
+                System.out.println("File opened successfully: " + defaultFilePath);
+            } else {
+                System.out.println("Failed to load XML structure from file: " + defaultFilePath);
             }
-            return content.toString();
         } catch (IOException e) {
-            System.out.println("Error reading file: " + e.getMessage());
-            return null;
+            System.out.println("Error reading XML file: " + e.getMessage());
         }
     }
 }

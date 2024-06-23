@@ -1,8 +1,10 @@
 package Commands;
 
 import Structure.CommandHandler;
-import Menu.Menu;
 import Structure.XMLElement;
+import Structure.XMLFileHandler;
+import Utils.XMLElementUtils;
+import Menu.Menu;
 
 import java.util.Scanner;
 
@@ -12,45 +14,49 @@ public class SetCommand implements CommandHandler {
     public void execute() {
         System.out.println("Executing Set command...");
 
-        if (Menu.rootElement != null) {
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Enter the ID of the element to set attribute: ");
-            String id = scanner.nextLine().trim();
+        // Check if XML structure is loaded
+        if (!Menu.fileLoaded || Menu.rootElement == null) {
+            System.out.println("No file is currently open or no XML content found.");
+            return;
+        }
 
-            XMLElement selectedElement = findElementById(Menu.rootElement, id);
-            if (selectedElement != null) {
-                System.out.print("Enter the attribute key: ");
-                String key = scanner.nextLine().trim();
+        Scanner scanner = new Scanner(System.in);
 
-                System.out.print("Enter the attribute value: ");
-                String value = scanner.nextLine().trim();
+        // Ask for element ID
+        System.out.print("Enter element ID: ");
+        String elementID = scanner.nextLine().trim();
 
-                selectedElement.setAttribute(key, value);
-                System.out.println("Attribute '" + key + "' set successfully for element with ID '" + id + "'.");
+        // Ask for attribute key
+        System.out.print("Enter attribute key (or 'text' for text content): ");
+        String attributeKey = scanner.nextLine().trim();
+
+        // Ask for new value
+        System.out.print("Enter new value: ");
+        String newValue = scanner.nextLine().trim();
+
+        // Find the element to update
+        XMLElement elementToUpdate = XMLElementUtils.findElementByID(Menu.rootElement, elementID);
+
+        if (elementToUpdate != null) {
+            if (attributeKey.equals("text")) {
+                // Update text content
+                elementToUpdate.setTextContent(newValue);
             } else {
-                System.out.println("Element with ID '" + id + "' not found.");
+                // Update attribute
+                elementToUpdate.setAttribute(attributeKey, newValue);
             }
+
+            // After updating the element, re-populate the XML content
+            String updatedContent = elementToUpdate.toXMLString();
+
+            // Update the XML content in memory using Menu.updateXmlContent()
+            Menu.updateXmlContent();
+
+            // Save the updated XML content to file
+            XMLFileHandler.writeXMLFile(Menu.currentFile, updatedContent);
+            System.out.println("Attribute or text content updated successfully.");
         } else {
-            System.out.println("No XML structure loaded. Use 'createxml' or 'open' command first.");
+            System.out.println("Element with ID '" + elementID + "' not found.");
         }
-    }
-
-    private XMLElement findElementById(XMLElement element, String id) {
-        if (element == null) {
-            return null;
-        }
-
-        if (id.equals(element.getAttribute("ID"))) {
-            return element;
-        }
-
-        for (XMLElement child : element.getChildren()) {
-            XMLElement foundElement = findElementById(child, id);
-            if (foundElement != null) {
-                return foundElement;
-            }
-        }
-
-        return null;
     }
 }
