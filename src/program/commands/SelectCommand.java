@@ -1,15 +1,18 @@
 package program.commands;
 
-import program.structure.CommandHandler;
+import program.structure.CommandWithArgs;
 import program.structure.XMLElement;
 import program.utils.XMLElementUtils;
 import program.menu.Menu;
 
-import java.util.Scanner;
+public class SelectCommand implements CommandWithArgs {
 
-public class SelectCommand implements CommandHandler {
     @Override
     public void execute() {
+    }
+
+    @Override
+    public void execute(String args) {
         System.out.println("Executing Select command...");
 
         if (!Menu.fileLoaded || Menu.rootElement == null) {
@@ -17,13 +20,14 @@ public class SelectCommand implements CommandHandler {
             return;
         }
 
-        Scanner scanner = new Scanner(System.in);
+        String[] parts = args.split(" ");
+        if (parts.length < 2) {
+            System.out.println("Please provide both element ID and attribute key.");
+            return;
+        }
 
-        System.out.print("Enter element ID: ");
-        String elementID = scanner.nextLine().trim();
-
-        System.out.print("Enter attribute key: ");
-        String attributeKey = scanner.nextLine().trim();
+        String elementID = parts[0];
+        String attributeKey = parts[1];
 
         XMLElement selectedElement = XMLElementUtils.findElementByID(Menu.rootElement, elementID);
 
@@ -42,5 +46,6 @@ public class SelectCommand implements CommandHandler {
             System.out.println("Element with ID '" + elementID + "' not found.");
         }
     }
+
 
 }

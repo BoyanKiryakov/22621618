@@ -1,39 +1,37 @@
 package program.commands;
 
-import program.structure.CommandHandler;
+import program.structure.CommandWithArgs;
 import program.structure.XMLElement;
 import program.structure.XMLFileHandler;
 import program.utils.XMLElementUtils;
 import program.menu.Menu;
 
-import java.util.Scanner;
-
-public class SetCommand implements CommandHandler {
+public class SetCommand implements CommandWithArgs {
 
     @Override
-    public void execute() {
+    public void execute(String args) {
         System.out.println("Executing Set command...");
         if (!Menu.fileLoaded || Menu.rootElement == null) {
             System.out.println("No file is currently open or no XML content found.");
             return;
         }
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter element ID: ");
-        String elementID = scanner.nextLine().trim();
+        String[] parts = args.split(" ", 3);
+        if (parts.length < 3) {
+            System.out.println("Please provide element ID, child element name, and new value.");
+            return;
+        }
+
+        String elementID = parts[0];
+        String childElementName = parts[1];
+        String newValue = parts[2];
 
         XMLElement elementToUpdate = XMLElementUtils.findElementByID(Menu.rootElement, elementID);
 
         if (elementToUpdate != null) {
-
-            System.out.print("Enter child element to edit (e.g., name, age, address): ");
-            String childElementName = scanner.nextLine().trim();
-
             XMLElement childElement = findChildElementByName(elementToUpdate, childElementName);
 
             if (childElement != null) {
-                System.out.print("Enter new value: ");
-                String newValue = scanner.nextLine().trim();
                 childElement.setTextContent(newValue);
                 String updatedContent = Menu.rootElement.toXMLString();
                 Menu.updateXmlContent();
@@ -55,5 +53,9 @@ public class SetCommand implements CommandHandler {
             }
         }
         return null;
+    }
+
+    @Override
+    public void execute() {
     }
 }

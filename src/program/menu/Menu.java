@@ -1,9 +1,7 @@
 package program.menu;
 
 import program.commands.*;
-import program.structure.CommandHandler;
-import program.structure.XMLElement;
-
+import program.structure.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -34,23 +32,32 @@ public class Menu {
         commands.put("print", new PrintFile());
         commands.put("set", new SetCommand());
         commands.put("select", new SelectCommand());
-        commands.put("xpath", new XPathCommands());
+        commands.put("xpath", new XPathCommands(""));
         commands.put("delete", new DeleteAttribute());
-        commands.put("listchildren", new ListChildren());
-        commands.put("addchild", new AddNewChild());
-        commands.put("accesstext", new AccessText());
-        commands.put("accesschild", new AccessChild());
+        commands.put("children", new ListChildren());
+        commands.put("newchild", new NewChild());
+        commands.put("text", new Text());
+        commands.put("child", new AccessChild());
     }
 
     public static void main(String[] args) {
-        System.out.println("Welcome to XML Parser!");
+        System.out.println("\nWelcome to XML Parser!");
 
         while (true) {
-            printMenu();
-            String command = scanner.nextLine().trim();
+            System.out.println("(type 'help' to see all available commands)");
+            System.out.println("Enter command: ");
+            String input = scanner.nextLine().trim();
+            String[] parts = input.split(" ", 2);
+            String command = parts[0];
+            String commandArgs = parts.length > 1 ? parts[1] : "";
 
             if (commands.containsKey(command)) {
-                commands.get(command).execute();
+                CommandHandler handler = commands.get(command);
+                if (handler instanceof CommandWithArgs) {
+                    ((CommandWithArgs) handler).execute(commandArgs);
+                } else {
+                    handler.execute();
+                }
                 if (command.equals("save") || command.equals("saveas") || command.equals("set") || command.equals("delete") || command.equals("addchild")) {
                     updateXmlContent();
                 }
@@ -68,24 +75,4 @@ public class Menu {
         }
     }
 
-    private static void printMenu() {
-        System.out.println("\nAvailable commands:\n" +
-                "open\n" +
-                "close\n" +
-                "save\n" +
-                "saveAs\n" +
-                "print\n" +
-                "set\n" +
-                "select\n" +
-                "xpath\n" +
-                "delete\n" +
-                "listchildren\n" +
-                "addchild\n" +
-                "accesstext\n" +
-                "accesschild\n" +
-                "help\n" +
-                "createxml\n" +
-                "exit");
-        System.out.print("\nEnter command: ");
-    }
 }

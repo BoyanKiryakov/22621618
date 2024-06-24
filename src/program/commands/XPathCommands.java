@@ -1,121 +1,219 @@
 package program.commands;
 
-import program.structure.CommandHandler;
+import program.structure.CommandWithArgs;
 import program.structure.XMLElement;
-import program.menu.Menu;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
+public class XPathCommands implements CommandWithArgs {
+    private String xpath;
 
-public class XPathCommands implements CommandHandler {
+    public XPathCommands(String xpath) {
+        this.xpath = xpath;
+    }
 
     @Override
-    public void execute() {
-        System.out.println("Executing XPath command...");
+    public void execute(String args) {
+        args = args.trim();
 
-        if (!Menu.fileLoaded || Menu.rootElement == null) {
-            System.out.println("No file is currently open or no XML content found.");
+        if (args.startsWith("xpath")) {
+            args = args.substring("xpath".length()).trim();
+        }
+
+        if (args.startsWith("<") && args.endsWith(">")) {
+            args = args.substring(1, args.length() - 1).trim();
+        } else {
+            System.out.println("Invalid XPath format. Please use 'xpath <parentTag/childQuery>'.");
             return;
         }
 
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Enter XPath: ");
-        String xpath = scanner.nextLine().trim();
-
-        String result = evaluateXPath(xpath);
-        System.out.println("Result:\n" + result);
-    }
-
-    private String evaluateXPath(String xpath) {
-        if (xpath.equals("person/address")) {
-            return getAllAddresses();
-        } else if (xpath.startsWith("person[0]/address")) {
-            int index = extractIndex(xpath);
-            return getPersonAddress(index);
-        } else if (xpath.equals("person(@ID)")) {
-            return getAllPersonIDs();
-        } else if (xpath.startsWith("person(address=")) {
-            String address = extractStringValue(xpath);
-            return getNamesWithAddress(address);
+        if (args.contains("/") && !args.contains("[") && !args.contains("]")&& !args.contains("=")) {
+            handleXPathQuery(args);
+        } else if (args.contains("@")) {
+            handleAttributeQuery(args);
+        } else if (args.contains("/") && args.contains("[") && args.contains("]")) {
+            handleIndexedQuery(args);
+        } else if (args.contains("=")) {
+            handleXPathEqual(args);
         } else {
-            return "Unsupported XPath query.";
+            System.out.println("Invalid XPath format. Please use 'xpath <parentTag/childQuery>'.");
         }
     }
 
-    private int extractIndex(String xpath) {
-        int startIndex = xpath.indexOf("[") + 1;
-        int endIndex = xpath.indexOf("]");
-        String indexStr = xpath.substring(startIndex, endIndex);
-        return Integer.parseInt(indexStr);
-    }
+    private void handleXPathQuery(String args) {
+        String[] parts = args.split("/");
+        String parentTag = parts[0].trim();
+        String childQuery = parts[1].trim();
 
-    private String extractStringValue(String xpath) {
-        int startIndex = xpath.indexOf("=\"") + 2;
-        int endIndex = xpath.indexOf("\")");
-        return xpath.substring(startIndex, endIndex);
-    }
-
-    private String getAllAddresses() {
-        List<String> addresses = new ArrayList<>();
-        List<XMLElement> personElements = Menu.rootElement.getChildrenWithName("person");
-        for (XMLElement person : personElements) {
-            List<XMLElement> addressElements = person.getChildrenWithName("address");
-            for (XMLElement addressElement : addressElements) {
-                addresses.add(addressElement.getTextContent().trim());
+        XMLElement rootElement = program.menu.Menu.getRootElement();
+        if (rootElement != null) {
+            List<XMLElement> matchedElements = rootElement.getChildrenWithName(parentTag + "/" + childQuery);
+            if (!matchedElements.isEmpty()) {
+                System.out.println("Matched elements found:");
+                for (XMLElement element : matchedElements) {
+                    System.out.println(element.toXMLString());
+                }
+            } else {
+                System.out.println("No matching elements found.");
             }
+        } else {
+            System.out.println("No XML file loaded.");
         }
-        return formatListResult(addresses);
     }
 
-    private String getPersonAddress(int index) {
-        List<XMLElement> personElements = Menu.rootElement.getChildrenWithName("person");
-        if (index < personElements.size()) {
-            XMLElement person = personElements.get(index);
-            List<XMLElement> addressElements = person.getChildrenWithName("address");
-            if (!addressElements.isEmpty()) {
-                return addressElements.get(0).getTextContent().trim();
-            }
-        }
-        return "Address not found.";
-    }
+    private void handleAttributeQuery(String args) {
+        String[] parts = args.split("@");
+        String parentTag = parts[0].trim();
+        String attrName = parts[1].trim();
 
-    private String getAllPersonIDs() {
-        List<String> ids = new ArrayList<>();
-        List<XMLElement> personElements = Menu.rootElement.getChildrenWithName("person");
-        for (XMLElement person : personElements) {
-            String id = person.getAttribute("ID");
-            if (id != null) {
-                ids.add(id.trim());
-            }
-        }
-        return formatListResult(ids);
-    }
-
-    private String getNamesWithAddress(String address) {
-        List<String> names = new ArrayList<>();
-        List<XMLElement> personElements = Menu.rootElement.getChildrenWithName("person");
-        for (XMLElement person : personElements) {
-            List<XMLElement> addressElements = person.getChildrenWithName("address");
-            for (XMLElement addressElement : addressElements) {
-                if (addressElement.getTextContent().trim().equals(address)) {
-                    List<XMLElement> nameElements = person.getChildrenWithName("name");
-                    for (XMLElement nameElement : nameElements) {
-                        names.add(nameElement.getTextContent().trim());
+        XMLElement rootElement = program.menu.Menu.getRootElement();
+        if (rootElement != null) {
+            List<XMLElement> matchedElements = rootElement.getChildrenWithName(parentTag);
+            if (!matchedElements.isEmpty()) {
+                System.out.println("Attributes found:");
+                for (XMLElement element : matchedElements) {
+                    String attrValue = element.getAttributes().toString();
+                    if (attrValue != null) {
+                        System.out.println(attrName + ": " + attrValue);
+                    } else {
+                        System.out.println("Attribute '" + attrName + "' not found in element:\n" + element.toXMLString());
                     }
                 }
+            } else {
+                System.out.println("No elements matched for parent tag: " + parentTag);
             }
+        } else {
+            System.out.println("No XML file loaded.");
         }
-        return formatListResult(names);
     }
 
-    private String formatListResult(List<String> list) {
-        StringBuilder result = new StringBuilder();
-        for (String item : list) {
-            result.append(item).append("\n");
+    private void handleIndexedQuery(String args) {
+
+        args = args.replace("xpath", "").trim();
+
+      if (!args.contains("[") || !args.contains("]")) {
+           System.out.println("Invalid XPath format: " + args);
+          return;
+      }
+
+        int startIndex = args.indexOf('[');
+        String parentTag = args.substring(0, startIndex).trim();
+
+        int endIndex = args.indexOf(']');
+        String indexStr = args.substring(startIndex + 1, endIndex).trim();
+        int index = Integer.parseInt(indexStr);
+
+        String attribute = args.substring(endIndex + 1).trim();
+
+        XMLElement rootElement = program.menu.Menu.getRootElement();
+        if (rootElement != null) {
+            List<XMLElement> matchedElements = rootElement.getChildrenWithName(parentTag);
+            if (!matchedElements.isEmpty()) {
+                if (index < matchedElements.size()) {
+                    XMLElement element = matchedElements.get(index);
+                    String value = element.getAttribute(attribute);
+                    if (value != null) {
+                        System.out.println("Value found at index " + index + ": " + value);
+                    } else {
+                        System.out.println(element.toXMLString());
+                    }
+                } else {
+                    System.out.println("Index " + index + " is out of bounds for matched elements.");
+                }
+            } else {
+                System.out.println("No elements matched for parent tag: " + parentTag);
+            }
+        } else {
+            System.out.println("No XML file loaded.");
         }
-        return result.toString().trim();
+    }
+
+    private void handleXPathEqual(String args) {
+        args = args.trim();
+//        if (!args.startsWith("<") || !args.endsWith(">")) {
+//            System.out.println("Invalid XPath format. Please use 'xpath <parentTag(condition)/childQuery>'.");
+//            return;
+//        }
+        args = args.substring(1, args.length() - 1).trim();
+        int slashIndex = args.indexOf("/");
+        if (slashIndex == -1) {
+            System.out.println("Invalid XPath format. Please use 'xpath <parentTag/childQuery>'.");
+            return;
+        }
+        String parentCondition = args.substring(0, slashIndex).trim();
+        String childQuery = args.substring(slashIndex + 1).trim();
+
+        String parentTag;
+        String condition = null;
+
+        int openParenIndex = parentCondition.indexOf("(");
+        int closeParenIndex = parentCondition.lastIndexOf(")");
+        if (openParenIndex != -1 && closeParenIndex != -1 && openParenIndex < closeParenIndex) {
+            parentTag = parentCondition.substring(0, openParenIndex).trim();
+            condition = parentCondition.substring(openParenIndex + 1, closeParenIndex).trim();
+        } else {
+            parentTag = parentCondition;
+        }
+
+        String attribute = null;
+        String value = null;
+
+        if (condition != null) {
+            String[] conditionParts = condition.split("=");
+            if (conditionParts.length != 2) {
+                System.out.println("Invalid condition format: " + condition);
+                return;
+            }
+
+            attribute = conditionParts[0].trim();
+            value = conditionParts[1].trim().replaceAll("[\"']", "");
+        }
+
+        XMLElement rootElement = program.menu.Menu.getRootElement();
+        if (rootElement != null) {
+            List<XMLElement> matchedElements = rootElement.getChildrenWithName(parentTag);
+            if (!matchedElements.isEmpty()) {
+                List<String> names = new ArrayList<>();
+                for (XMLElement element : matchedElements) {
+                    if (attribute == null || value == null) {
+                        List<XMLElement> childElements = element.getChildrenWithName(childQuery);
+                        for (XMLElement childElement : childElements) {
+                            String childContent = childElement.getTextContent();
+                            if (childContent != null && !childContent.isEmpty()) {
+                                names.add(childContent);
+                            }
+                        }
+                    } else {
+                        String attrValue = element.getAttribute(attribute);
+                        if (attrValue != null && attrValue.equals(value)) {
+                            List<XMLElement> childElements = element.getChildrenWithName(childQuery);
+                            for (XMLElement childElement : childElements) {
+                                String childContent = childElement.getTextContent();
+                                if (childContent != null && !childContent.isEmpty()) {
+                                    names.add(childContent);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!names.isEmpty()) {
+                    System.out.println("Elements with attribute '" + attribute + "' equal to '" + value + "' under parent tag '" + parentTag + "':");
+                    for (String name : names) {
+                        System.out.println(name);
+                    }
+                } else {
+                    System.out.println("No elements found with attribute '" + attribute + "' equal to '" + value + "' under parent tag '" + parentTag + "'");
+                }
+            } else {
+                System.out.println("No elements matched for parent tag: " + parentTag);
+            }
+        } else {
+            System.out.println("No XML file loaded.");
+        }
+    }
+    @Override
+    public void execute() {
     }
 }

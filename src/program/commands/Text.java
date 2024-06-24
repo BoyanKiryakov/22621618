@@ -7,11 +7,11 @@ import program.menu.Menu;
 
 import java.util.Scanner;
 
-public class ListChildren implements CommandWithArgs {
+public class Text implements CommandWithArgs {
 
     @Override
     public void execute(String args) {
-        System.out.println("Executing ListChildren command...");
+        System.out.println("Executing AccessText command...");
 
         if (!Menu.fileLoaded || Menu.rootElement == null) {
             System.out.println("No file is currently open or no XML content found.");
@@ -25,22 +25,22 @@ public class ListChildren implements CommandWithArgs {
         if (element == null) {
             System.out.println("Element with ID '" + elementID + "' not found.");
         } else {
-            listChildren(element);
-        }
-    }
-
-    private void listChildren(XMLElement element) {
-        if (element.getChildren().isEmpty()) {
-            System.out.println("Element with ID '" + element.getAttribute("ID") + "' has no children.");
-        } else {
-            System.out.println("Children of element with ID '" + element.getAttribute("ID") + "':");
-            for (XMLElement child : element.getChildren()) {
-                System.out.println("\t<" + child.getTagName() + ">");
-            }
+            System.out.println("Text content of element with ID '" + elementID + "':");
+            collectTextContent(element);
         }
     }
 
     @Override
     public void execute() {
+    }
+
+    private void collectTextContent(XMLElement element) {
+        if (element.getTextContent() != null && !element.getTextContent().isEmpty()) {
+            System.out.println(element.getTextContent().trim());
+        }
+
+        for (XMLElement child : element.getChildren()) {
+            collectTextContent(child);
+        }
     }
 }

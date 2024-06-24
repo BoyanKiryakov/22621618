@@ -146,4 +146,14 @@ public class XMLElement {
             sb.append("\t");
         }
     }
+    public List<XMLElement> getChildrenByTagName(String tagName) {
+        List<XMLElement> matchingChildren = new ArrayList<>();
+        for (XMLElement child : children) {
+            if (child.getTagName().equals(tagName)) {
+                matchingChildren.add(child);
+            }
+        }
+        return matchingChildren;
+    }
+
 }

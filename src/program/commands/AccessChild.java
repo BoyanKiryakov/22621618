@@ -1,44 +1,43 @@
 package program.commands;
 
-import program.structure.CommandHandler;
-import program.menu.Menu;
+import program.structure.CommandWithArgs;
 import program.structure.XMLElement;
+import program.utils.XMLElementUtils;
+import program.menu.Menu;
 
 import java.util.Scanner;
 
-public class AccessChild implements CommandHandler {
+public class AccessChild implements CommandWithArgs {
 
     @Override
-    public void execute() {
+    public void execute(String args) {
         System.out.println("Executing AccessChild command...");
 
-        // Проверка дали е заредена XML структурата
         if (!Menu.fileLoaded || Menu.rootElement == null) {
             System.out.println("No file is currently open or no XML content found.");
             return;
         }
 
-        Scanner scanner = new Scanner(System.in);
+        String[] parts = args.split(" ");
+        if (parts.length < 2) {
+            System.out.println("Invalid arguments. Usage: child <id> <n>");
+            return;
+        }
 
-        // Заявете ID на елемента
-        System.out.print("Enter element ID: ");
-        String elementID = scanner.nextLine().trim();
+        String elementID = parts[0].trim();
+        int childIndex = Integer.parseInt(parts[1].trim());
 
-        // Намерете елемента с посоченото ID
-        XMLElement element = findElementById(elementID, Menu.rootElement);
+        XMLElement element = XMLElementUtils.findElementByID(Menu.rootElement, elementID);
 
         if (element == null) {
             System.out.println("Element with ID '" + elementID + "' not found.");
         } else {
-            // Заявете индекса на детето
-            System.out.print("Enter index of the child (starting from 1): ");
-            int childIndex = scanner.nextInt();
-            scanner.nextLine(); // Консумирайте новия ред
-
-            // Достъп и отпечатване на детето на посочения индекс
             accessChildAtIndex(element, childIndex);
         }
     }
+
+    @Override
+    public void execute() {}
 
     private void accessChildAtIndex(XMLElement element, int index) {
         if (index < 1 || index > element.getChildren().size()) {
@@ -48,24 +47,5 @@ public class AccessChild implements CommandHandler {
             String childValue = child.getTextContent().trim();
             System.out.println("Child at index " + index + ": <" + child.getTagName() + "> " + childValue);
         }
-    }
-
-    private XMLElement findElementById(String id, XMLElement element) {
-        if (element == null) {
-            return null;
-        }
-
-        if (id.equals(element.getAttribute("ID"))) {
-            return element;
-        }
-
-        for (XMLElement child : element.getChildren()) {
-            XMLElement found = findElementById(id, child);
-            if (found != null) {
-                return found;
-            }
-        }
-
-        return null;
     }
 }

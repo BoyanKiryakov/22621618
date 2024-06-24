@@ -1,12 +1,12 @@
 <people>
 	<person ID="1">
 		<name>Ivan</name>
-		<age>23</age>
+		<age>50</age>
 		<address>Varna</address>
 	</person>
 	<person ID="2">
-		<name>Georgi</name>
-		<age>53</age>
+		<name>Maria</name>
+		<age>42</age>
 		<address>Sofia</address>
 	</person>
 </people>
