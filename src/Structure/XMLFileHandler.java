@@ -29,11 +29,6 @@ public class XMLFileHandler {
             String attributesString = matcher.group(2).trim();
             String content = matcher.group(3);
 
-            // Debug print statements
-            System.out.println("Parsing element: " + tagName);
-            System.out.println("Attributes: " + attributesString);
-            System.out.println("Content: " + content);
-
             XMLElement element = new XMLElement(null, tagName, null);  // Initial textContent is null
 
             // Parse attributes
@@ -50,9 +45,9 @@ public class XMLFileHandler {
             while (nestedMatcher.find()) {
                 hasChildren = true;
                 if (nestedMatcher.start() > lastIndex) {
-                    String textSegment = content.substring(lastIndex, nestedMatcher.start());
-                    if (!textSegment.trim().isEmpty()) {
-                        element.setTextContent(textSegment.trim());
+                    String textSegment = content.substring(lastIndex, nestedMatcher.start()).trim();
+                    if (!textSegment.isEmpty()) {
+                        element.setTextContent(textSegment);
                     }
                 }
                 element.addChild(parseElement(nestedMatcher.group(0)));
@@ -61,9 +56,9 @@ public class XMLFileHandler {
             if (!hasChildren) {
                 element.setTextContent(content.trim());
             } else if (lastIndex < content.length()) {
-                String textSegment = content.substring(lastIndex);
-                if (!textSegment.trim().isEmpty()) {
-                    element.setTextContent(textSegment.trim());
+                String textSegment = content.substring(lastIndex).trim();
+                if (!textSegment.isEmpty()) {
+                    element.setTextContent(textSegment);
                 }
             }
 
@@ -71,6 +66,7 @@ public class XMLFileHandler {
         }
         return null;
     }
+
 
     public static void writeXMLFile(String filePath, String xmlContent) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {

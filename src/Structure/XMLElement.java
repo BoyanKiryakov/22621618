@@ -101,28 +101,30 @@ public class XMLElement {
 
     private void toXMLStringHelper(StringBuilder sb, XMLElement element, int indent) {
         addIndentation(sb, indent);
-        sb.append("<").append(element.tagName);
+        sb.append("<").append(element.getTagName());
 
-        for (Map.Entry<String, String> entry : element.attributes.entrySet()) {
+        for (Map.Entry<String, String> entry : element.getAttributes().entrySet()) {
             sb.append(" ").append(entry.getKey()).append("=\"").append(entry.getValue()).append("\"");
         }
 
-        if (element.children.isEmpty() && (element.textContent == null || element.textContent.isEmpty())) {
+        if (element.getChildren().isEmpty() && (element.getTextContent() == null || element.getTextContent().isEmpty())) {
             sb.append("/>\n");
         } else {
-            sb.append(">\n");
+            sb.append(">");
 
-            if (element.textContent != null && !element.textContent.isEmpty()) {
-                addIndentation(sb, indent + 1);
-                sb.append(element.textContent).append("\n");
+            if (element.getTextContent() != null && !element.getTextContent().isEmpty()) {
+                sb.append(element.getTextContent());
             }
 
-            for (XMLElement child : element.children) {
-                toXMLStringHelper(sb, child, indent + 1);
+            if (!element.getChildren().isEmpty()) {
+                sb.append("\n");
+                for (XMLElement child : element.getChildren()) {
+                    toXMLStringHelper(sb, child, indent + 1);
+                }
+                addIndentation(sb, indent);
             }
 
-            addIndentation(sb, indent);
-            sb.append("</").append(element.tagName).append(">\n");
+            sb.append("</").append(element.getTagName()).append(">\n");
         }
     }
 
