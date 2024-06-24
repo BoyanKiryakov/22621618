@@ -25,7 +25,7 @@ public class AddNewChild implements CommandHandler {
         String id = scanner.nextLine().trim();
 
         // Create a new XMLElement for the person
-        XMLElement newPerson = new XMLElement("person", null);
+        XMLElement newPerson = new XMLElement("person", null,null);
         newPerson.setAttribute("ID", id);
 
         // Add the new person as a child to the root <people> element

@@ -10,9 +10,11 @@ public class XMLElement {
     private String textContent;
     private Map<String, String> attributes;
     private List<XMLElement> children;
+    private String tagName;
 
-    public XMLElement(String name, String textContent) {
+    public XMLElement(String name, String tagName, String textContent) {
         this.name = name;
+        this.tagName = tagName;
         this.textContent = textContent;
         this.attributes = new HashMap<>();
         this.children = new ArrayList<>();
@@ -24,6 +26,14 @@ public class XMLElement {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getTagName() {
+        return tagName;
+    }
+
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
     }
 
     public String getTextContent() {
@@ -85,35 +95,40 @@ public class XMLElement {
 
     public String toXMLString() {
         StringBuilder sb = new StringBuilder();
-        toXMLStringHelper(sb, 0);
+        toXMLStringHelper(sb, this, 0);
         return sb.toString();
     }
 
-    private void toXMLStringHelper(StringBuilder sb, int depth) {
-        sb.append("\t".repeat(depth));
-        sb.append("<").append(element.getName());
+    private void toXMLStringHelper(StringBuilder sb, XMLElement element, int indent) {
+        addIndentation(sb, indent);
+        sb.append("<").append(element.tagName);
 
-        // Append attributes
-        for (String key : element.getAttributes().keySet()) {
-            sb.append(" ").append(key).append("=\"").append(element.getAttribute(key)).append("\"");
+        for (Map.Entry<String, String> entry : element.attributes.entrySet()) {
+            sb.append(" ").append(entry.getKey()).append("=\"").append(entry.getValue()).append("\"");
         }
 
-        if (element.getChildren().isEmpty() && (element.getTextContent() == null || element.getTextContent().trim().isEmpty())) {
-            sb.append("></").append(element.getName()).append(">\n");
+        if (element.children.isEmpty() && (element.textContent == null || element.textContent.isEmpty())) {
+            sb.append("/>\n");
         } else {
             sb.append(">\n");
 
-            // Append text content if present
-            if (element.getTextContent() != null && !element.getTextContent().trim().isEmpty()) {
-                sb.append("\t".repeat(depth + 1)).append(element.getTextContent().trim()).append("\n");
+            if (element.textContent != null && !element.textContent.isEmpty()) {
+                addIndentation(sb, indent + 1);
+                sb.append(element.textContent).append("\n");
             }
 
-            // Append children recursively
-            for (XMLElement child : element.getChildren()) {
-                toXMLStringHelper(child, sb, depth + 1);
+            for (XMLElement child : element.children) {
+                toXMLStringHelper(sb, child, indent + 1);
             }
 
-            sb.append("\t".repeat(depth)).append("</").append(element.getName()).append(">\n");
+            addIndentation(sb, indent);
+            sb.append("</").append(element.tagName).append(">\n");
+        }
+    }
+
+    private void addIndentation(StringBuilder sb, int indent) {
+        for (int i = 0; i < indent; i++) {
+            sb.append("\t");
         }
     }
 }

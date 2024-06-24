@@ -2,7 +2,6 @@ package Commands;
 
 import Structure.CommandHandler;
 import Menu.Menu;
-import Structure.XMLElement;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

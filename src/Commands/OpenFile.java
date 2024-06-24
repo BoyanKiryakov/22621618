@@ -12,7 +12,7 @@ public class OpenFile implements CommandHandler {
 
     @Override
     public void execute() {
-        String defaultFilePath = "default.xml"; // Adjust this to your actual default file path
+        String defaultFilePath = "default.xml";
         File file = new File(defaultFilePath);
 
         if (!file.exists()) {

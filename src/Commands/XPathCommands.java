@@ -38,7 +38,7 @@ public class XPathCommands implements CommandHandler {
                 result.add(element.getChildren().get(index));
             } else if (part.contains("@")) {
                 String attributeName = part.substring(part.indexOf("@") + 1);
-                result.add(new XMLElement("attribute", element.getAttribute(attributeName)));
+                result.add(new XMLElement("attribute",null, element.getAttribute(attributeName)));
             } else if (part.contains("=")) {
                 String[] comparison = part.split("=");
                 String tagName = comparison[0];

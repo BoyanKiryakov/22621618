@@ -26,37 +26,55 @@ public class SetCommand implements CommandHandler {
         System.out.print("Enter element ID: ");
         String elementID = scanner.nextLine().trim();
 
-        // Ask for attribute key
-        System.out.print("Enter attribute key (or 'text' for text content): ");
-        String attributeKey = scanner.nextLine().trim();
-
-        // Ask for new value
-        System.out.print("Enter new value: ");
-        String newValue = scanner.nextLine().trim();
-
         // Find the element to update
         XMLElement elementToUpdate = XMLElementUtils.findElementByID(Menu.rootElement, elementID);
 
         if (elementToUpdate != null) {
-            if (attributeKey.equals("text")) {
-                // Update text content
-                elementToUpdate.setTextContent(newValue);
+            // Ask for child element to edit
+            System.out.print("Enter child element to edit (e.g., name, age, address): ");
+            String childElementName = scanner.nextLine().trim();
+
+            // Find the child element to edit by tag name
+            XMLElement childElement = findChildElementByName(elementToUpdate, childElementName);
+
+            if (childElement != null) {
+                // Ask for new value
+                System.out.print("Enter new value: ");
+                String newValue = scanner.nextLine().trim();
+
+                // Update the text content of the child element
+                childElement.setTextContent(newValue);
+
+                // After updating the element, re-populate the XML content
+                String updatedContent = Menu.rootElement.toXMLString();
+
+                // Update the XML content in memory using Menu.updateXmlContent()
+                Menu.updateXmlContent();
+
+                // Save the updated XML content to file
+                XMLFileHandler.writeXMLFile(Menu.currentFile, updatedContent);
+                System.out.println("Child element '" + childElementName + "' updated successfully.");
             } else {
-                // Update attribute
-                elementToUpdate.setAttribute(attributeKey, newValue);
+                System.out.println("Child element '" + childElementName + "' not found in element with ID '" + elementID + "'.");
             }
-
-            // After updating the element, re-populate the XML content
-            String updatedContent = elementToUpdate.toXMLString();
-
-            // Update the XML content in memory using Menu.updateXmlContent()
-            Menu.updateXmlContent();
-
-            // Save the updated XML content to file
-            XMLFileHandler.writeXMLFile(Menu.currentFile, updatedContent);
-            System.out.println("Attribute or text content updated successfully.");
         } else {
             System.out.println("Element with ID '" + elementID + "' not found.");
         }
+    }
+
+    /**
+     * Helper method to find a child element by its tag name.
+     *
+     * @param parentElement The parent XMLElement in which to search for the child.
+     * @param tagName       The tag name of the child element to find.
+     * @return The XMLElement representing the child element if found, otherwise null.
+     */
+    private XMLElement findChildElementByName(XMLElement parentElement, String tagName) {
+        for (XMLElement child : parentElement.getChildren()) {
+            if (child.getTagName().equalsIgnoreCase(tagName)) {
+                return child;
+            }
+        }
+        return null;
     }
 }

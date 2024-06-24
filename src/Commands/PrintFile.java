@@ -1,22 +1,24 @@
 package Commands;
 
 import Structure.CommandHandler;
-import Menu.Menu;
 import Structure.XMLElement;
+import Menu.Menu;
 
 public class PrintFile implements CommandHandler {
+
     @Override
     public void execute() {
-        System.out.println("Executing Print command...");
+        printXMLContents();
+    }
 
-        // Check if a file is currently loaded
-        if (!Menu.fileLoaded || Menu.rootElement == null) {
-            System.out.println("No file is currently open or no XML content found.");
-            return;
+    public static void printXMLContents() {
+        XMLElement rootElement = Menu.getRootElement();
+
+        if (rootElement != null) {
+            System.out.println("XML Content:");
+            System.out.println(rootElement.toXMLString());
+        } else {
+            System.out.println("No XML content loaded in memory.");
         }
-
-        // Print the XML structure from the root element
-        String xmlString = Menu.rootElement.toXMLString();
-        System.out.println(xmlString);
     }
 }

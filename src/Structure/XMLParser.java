@@ -26,7 +26,7 @@ public class XMLParser {
 
         currentIndex++;
         String elementName = parseElementName();
-        XMLElement element = new XMLElement(elementName,null);
+        XMLElement element = new XMLElement(elementName, null, null);
 
         parseAttributes(element);
         if (xml.charAt(currentIndex) == '>') {
