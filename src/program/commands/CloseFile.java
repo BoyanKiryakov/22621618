@@ -1,7 +1,7 @@
-package Commands;
+package program.commands;
 
-import Structure.CommandHandler;
-import Menu.Menu;
+import program.structure.CommandHandler;
+import program.menu.Menu;
 
 public class CloseFile implements CommandHandler {
     @Override

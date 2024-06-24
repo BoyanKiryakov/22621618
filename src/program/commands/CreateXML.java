@@ -1,9 +1,6 @@
-package Commands;
+package program.commands;
 
-import Structure.CommandHandler;
-import Menu.Menu;
-import Structure.XMLFileHandler;
-import Structure.XMLElement;
+import program.structure.CommandHandler;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

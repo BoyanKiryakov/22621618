@@ -1,8 +1,9 @@
-package Commands;
+package program.commands;
 
-import Structure.CommandHandler;
-import Menu.Menu;
-import Structure.XMLElement;
+import program.structure.CommandHandler;
+import program.menu.Menu;
+import program.structure.XMLElement;
+import program.utils.XMLElementUtils;
 
 import java.util.Scanner;
 
@@ -12,7 +13,6 @@ public class ListChildren implements CommandHandler {
     public void execute() {
         System.out.println("Executing ListChildren command...");
 
-        // Check if XML structure is loaded
         if (!Menu.fileLoaded || Menu.rootElement == null) {
             System.out.println("No file is currently open or no XML content found.");
             return;
@@ -20,12 +20,10 @@ public class ListChildren implements CommandHandler {
 
         Scanner scanner = new Scanner(System.in);
 
-        // Ask for element ID
         System.out.print("Enter element ID: ");
         String elementID = scanner.nextLine().trim();
 
-        // Find the element with the specified ID
-        XMLElement element = findElementById(elementID, Menu.rootElement);
+        XMLElement element = XMLElementUtils.findElementByID(Menu.rootElement, elementID);
 
         if (element == null) {
             System.out.println("Element with ID '" + elementID + "' not found.");
@@ -40,27 +38,8 @@ public class ListChildren implements CommandHandler {
         } else {
             System.out.println("Children of element with ID '" + element.getAttribute("ID") + "':");
             for (XMLElement child : element.getChildren()) {
-                System.out.println("\t<" + child.getName() + ">");
+                System.out.println("\t<" + child.getTagName() + ">");
             }
         }
-    }
-
-    private XMLElement findElementById(String id, XMLElement element) {
-        if (element == null) {
-            return null;
-        }
-
-        if (id.equals(element.getAttribute("ID"))) {
-            return element;
-        }
-
-        for (XMLElement child : element.getChildren()) {
-            XMLElement found = findElementById(id, child);
-            if (found != null) {
-                return found;
-            }
-        }
-
-        return null;
     }
 }

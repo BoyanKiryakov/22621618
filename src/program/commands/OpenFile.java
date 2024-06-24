@@ -1,9 +1,9 @@
-package Commands;
+package program.commands;
 
-import Structure.CommandHandler;
-import Menu.Menu;
-import Structure.XMLElement;
-import Structure.XMLFileHandler;
+import program.structure.CommandHandler;
+import program.menu.Menu;
+import program.structure.XMLElement;
+import program.structure.XMLFileHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,12 +17,10 @@ public class OpenFile implements CommandHandler {
 
         if (!file.exists()) {
             System.out.println("Default XML file does not exist: " + defaultFilePath);
-            // Call the CreateXML command handler to create a new default.xml file
             CommandHandler createXmlCommand = Menu.commands.get("createxml");
             if (createXmlCommand != null) {
-                createXmlCommand.execute(); // Execute the CreateXML command
-                // Now attempt to load the file again
-                file = new File(defaultFilePath); // Update the file reference after creation
+                createXmlCommand.execute();
+                file = new File(defaultFilePath);
                 if (!file.exists()) {
                     System.out.println("Failed to create XML file: " + defaultFilePath);
                     return;
@@ -34,12 +32,11 @@ public class OpenFile implements CommandHandler {
         }
 
         try {
-            // Parse the XML file
             XMLElement rootElement = XMLFileHandler.parseXML(defaultFilePath);
 
             if (rootElement != null) {
-                Menu.rootElement = rootElement;  // Store the root element in Menu for access throughout the program
-                Menu.fileLoaded = true;          // Mark that a file is successfully loaded
+                Menu.rootElement = rootElement;
+                Menu.fileLoaded = true;
                 Menu.currentFile = defaultFilePath;
                 System.out.println("File opened successfully: " + defaultFilePath);
             } else {

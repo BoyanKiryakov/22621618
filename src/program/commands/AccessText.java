@@ -1,8 +1,8 @@
-package Commands;
+package program.commands;
 
-import Structure.CommandHandler;
-import Menu.Menu;
-import Structure.XMLElement;
+import program.structure.CommandHandler;
+import program.menu.Menu;
+import program.structure.XMLElement;
 
 import java.util.Scanner;
 
@@ -12,7 +12,7 @@ public class AccessText implements CommandHandler {
     public void execute() {
         System.out.println("Executing AccessText command...");
 
-        // Check if XML structure is loaded
+        // Проверка дали е заредена XML структурата
         if (!Menu.fileLoaded || Menu.rootElement == null) {
             System.out.println("No file is currently open or no XML content found.");
             return;
@@ -20,29 +20,29 @@ public class AccessText implements CommandHandler {
 
         Scanner scanner = new Scanner(System.in);
 
-        // Ask for element ID
+        // Заявете ID на елемента
         System.out.print("Enter element ID: ");
         String elementID = scanner.nextLine().trim();
 
-        // Find the element with the specified ID
+        // Намерете елемента с посоченото ID
         XMLElement element = findElementById(elementID, Menu.rootElement);
 
         if (element == null) {
             System.out.println("Element with ID '" + elementID + "' not found.");
         } else {
-            // Print all textual content associated with the element
+            // Отпечатайте всички текстови съдържания, свързани с елемента
             System.out.println("Text content of element with ID '" + elementID + "':");
             collectTextContent(element);
         }
     }
 
     private void collectTextContent(XMLElement element) {
-        // Print text content of current element
+        // Отпечатване на текстовото съдържание на текущия елемент
         if (element.getTextContent() != null && !element.getTextContent().isEmpty()) {
             System.out.println(element.getTextContent().trim());
         }
 
-        // Recursively print text content of children
+        // Рекурсивно отпечатване на текстовото съдържание на децата
         for (XMLElement child : element.getChildren()) {
             collectTextContent(child);
         }

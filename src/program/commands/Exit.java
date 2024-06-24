@@ -1,6 +1,6 @@
-package Commands;
+package program.commands;
 
-import Structure.CommandHandler;
+import program.structure.CommandHandler;
 
 public class Exit implements CommandHandler {
     @Override

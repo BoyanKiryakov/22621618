@@ -1,8 +1,8 @@
-package Commands;
+package program.commands;
 
-import Structure.CommandHandler;
-import Menu.Menu;
-import Structure.XMLElement;
+import program.structure.CommandHandler;
+import program.menu.Menu;
+import program.structure.XMLElement;
 
 import java.util.Scanner;
 
@@ -12,7 +12,7 @@ public class AccessChild implements CommandHandler {
     public void execute() {
         System.out.println("Executing AccessChild command...");
 
-        // Check if XML structure is loaded
+        // Проверка дали е заредена XML структурата
         if (!Menu.fileLoaded || Menu.rootElement == null) {
             System.out.println("No file is currently open or no XML content found.");
             return;
@@ -20,22 +20,22 @@ public class AccessChild implements CommandHandler {
 
         Scanner scanner = new Scanner(System.in);
 
-        // Ask for element ID
+        // Заявете ID на елемента
         System.out.print("Enter element ID: ");
         String elementID = scanner.nextLine().trim();
 
-        // Find the element with the specified ID
+        // Намерете елемента с посоченото ID
         XMLElement element = findElementById(elementID, Menu.rootElement);
 
         if (element == null) {
             System.out.println("Element with ID '" + elementID + "' not found.");
         } else {
-            // Ask for child index
+            // Заявете индекса на детето
             System.out.print("Enter index of the child (starting from 1): ");
             int childIndex = scanner.nextInt();
-            scanner.nextLine(); // Consume newline character
+            scanner.nextLine(); // Консумирайте новия ред
 
-            // Access and print the child element at the specified index
+            // Достъп и отпечатване на детето на посочения индекс
             accessChildAtIndex(element, childIndex);
         }
     }
@@ -46,7 +46,7 @@ public class AccessChild implements CommandHandler {
         } else {
             XMLElement child = element.getChildren().get(index - 1);
             String childValue = child.getTextContent().trim();
-            System.out.println("Child at index " + index + ": <" + child.getName() + "> " + childValue);
+            System.out.println("Child at index " + index + ": <" + child.getTagName() + "> " + childValue);
         }
     }
 

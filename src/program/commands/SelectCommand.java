@@ -1,9 +1,9 @@
-package Commands;
+package program.commands;
 
-import Structure.CommandHandler;
-import Structure.XMLElement;
-import Utils.XMLElementUtils;
-import Menu.Menu;
+import program.structure.CommandHandler;
+import program.structure.XMLElement;
+import program.utils.XMLElementUtils;
+import program.menu.Menu;
 
 import java.util.Scanner;
 
@@ -12,7 +12,6 @@ public class SelectCommand implements CommandHandler {
     public void execute() {
         System.out.println("Executing Select command...");
 
-        // Check if XML structure is loaded
         if (!Menu.fileLoaded || Menu.rootElement == null) {
             System.out.println("No file is currently open or no XML content found.");
             return;
@@ -20,23 +19,18 @@ public class SelectCommand implements CommandHandler {
 
         Scanner scanner = new Scanner(System.in);
 
-        // Ask for element ID
         System.out.print("Enter element ID: ");
         String elementID = scanner.nextLine().trim();
 
-        // Ask for attribute key
         System.out.print("Enter attribute key: ");
         String attributeKey = scanner.nextLine().trim();
 
-        // Find the element with the specified ID
         XMLElement selectedElement = XMLElementUtils.findElementByID(Menu.rootElement, elementID);
 
         if (selectedElement != null) {
-            // Extract the entire element content as a string
             String elementContent = selectedElement.toXMLString();
 
-            // Use pattern matching to find the attribute value
-            String attributeValue = XMLElementUtils.extractAttributeFromElement(elementContent, attributeKey);
+            String attributeValue = XMLElementUtils.extractTagContent(elementContent, attributeKey);
 
             if (attributeValue != null) {
                 System.out.println("Attribute value of '" + attributeKey + "' for element with ID '" + elementID + "': " + attributeValue);
@@ -48,4 +42,5 @@ public class SelectCommand implements CommandHandler {
             System.out.println("Element with ID '" + elementID + "' not found.");
         }
     }
+
 }

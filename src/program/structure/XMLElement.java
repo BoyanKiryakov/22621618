@@ -1,4 +1,4 @@
-package Structure;
+package program.structure;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,20 +20,8 @@ public class XMLElement {
         this.children = new ArrayList<>();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getTagName() {
         return tagName;
-    }
-
-    public void setTagName(String tagName) {
-        this.tagName = tagName;
     }
 
     public String getTextContent() {
@@ -48,16 +36,8 @@ public class XMLElement {
         return attributes;
     }
 
-    public void setAttributes(Map<String, String> attributes) {
-        this.attributes = attributes;
-    }
-
     public List<XMLElement> getChildren() {
         return children;
-    }
-
-    public void setChildren(List<XMLElement> children) {
-        this.children = children;
     }
 
     public void addChild(XMLElement child) {
@@ -79,6 +59,38 @@ public class XMLElement {
     public XMLElement findElementById(String id) {
         return findElementByIdHelper(this, id);
     }
+    public List<XMLElement> getChildrenWithName(String query) {
+        List<XMLElement> matchedChildren = new ArrayList<>();
+
+        // Разделяне на търсенето на две части
+        String[] parts = query.split("/", 2);
+        String parentTagName = parts[0].trim();
+        String childQuery = parts.length > 1 ? parts[1].trim() : null;
+
+        for (XMLElement child : children) {
+            if (child.getTagName().equalsIgnoreCase(parentTagName)) {
+                if (childQuery == null) {
+                    matchedChildren.add(child);
+                } else {
+                    if (childQuery.equals("*")) {
+                        matchedChildren.addAll(child.getChildren());
+                    } else if (childQuery.startsWith("@")) {
+                        String attrName = childQuery.substring(1);
+                        String attrValue = child.getAttribute(attrName);
+                        if (attrValue != null) {
+                            matchedChildren.add(new XMLElement(attrName, attrValue, null));
+                        }
+                    } else {
+                        List<XMLElement> queriedChildren = child.getChildrenWithName(childQuery);
+                        matchedChildren.addAll(queriedChildren);
+                    }
+                }
+            }
+        }
+
+        return matchedChildren;
+    }
+
 
     private XMLElement findElementByIdHelper(XMLElement element, String id) {
         if (element.getAttribute("ID") != null && element.getAttribute("ID").equals(id)) {
@@ -99,6 +111,7 @@ public class XMLElement {
         return sb.toString();
     }
 
+    //Клас за превръщане на прочетената структура от файл в стринг, които да се запази в паметта
     private void toXMLStringHelper(StringBuilder sb, XMLElement element, int indent) {
         addIndentation(sb, indent);
         sb.append("<").append(element.getTagName());

@@ -1,10 +1,6 @@
-package Structure;
+package program.structure;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,14 +27,14 @@ public class XMLFileHandler {
 
             XMLElement element = new XMLElement(null, tagName, null);  // Initial textContent is null
 
-            // Parse attributes
+            // Четене на атрибути
             Pattern attributePattern = Pattern.compile("(\\w+)=\"([^\"]*)\"");
             Matcher attrMatcher = attributePattern.matcher(attributesString);
             while (attrMatcher.find()) {
                 element.setAttribute(attrMatcher.group(1), attrMatcher.group(2));
             }
 
-            // Process content for nested elements or text
+            // Прочитане на вложени елементи и текст
             Matcher nestedMatcher = elementPattern.matcher(content);
             int lastIndex = 0;
             boolean hasChildren = false;
@@ -67,7 +63,7 @@ public class XMLFileHandler {
         return null;
     }
 
-
+    // Метод за запис в определн случай
     public static void writeXMLFile(String filePath, String xmlContent) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             writer.write(xmlContent);

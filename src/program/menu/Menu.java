@@ -1,9 +1,8 @@
-package Menu;
+package program.menu;
 
-import Commands.*;
-import Structure.CommandHandler;
-import Structure.XMLElement;
-
+import program.commands.*;
+import program.structure.CommandHandler;
+import program.structure.XMLElement;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,12 +15,10 @@ public class Menu {
     public static String currentFile;
     public static XMLElement rootElement;
 
-    // Setter method for root element
     public static void setRootElement(XMLElement element) {
         rootElement = element;
     }
 
-    // Getter method for root element
     public static XMLElement getRootElement() {
         return rootElement;
     }
@@ -55,7 +52,7 @@ public class Menu {
             if (commands.containsKey(command)) {
                 commands.get(command).execute();
                 if (command.equals("save") || command.equals("saveas") || command.equals("set") || command.equals("delete") || command.equals("addchild")) {
-                    updateXmlContent(); // Update XML content after specific commands
+                    updateXmlContent();
                 }
             } else {
                 System.out.println("Invalid command. Type 'help' for a list of commands.");
@@ -64,10 +61,7 @@ public class Menu {
     }
 
     public static void updateXmlContent() {
-        // Example implementation assuming rootElement is where XML structure is stored
         if (fileLoaded && rootElement != null) {
-            // Perform operations to update XML content in memory
-            // Example: rootElement.setContent(updatedContent);
             System.out.println("XML content updated in memory.");
         } else {
             System.out.println("No file loaded or root element is null.");
@@ -75,23 +69,23 @@ public class Menu {
     }
 
     private static void printMenu() {
-        System.out.println("\nAvailable commands:");
-        System.out.println("Yopen - Open a file");
-        System.out.println("Yclose - Close the current file");
-        System.out.println("Ysave - Save changes to the current file");
-        System.out.println("Ysaveas - Save changes to a different file");
-        System.out.println("Yprint - Print the current XML file");
-        System.out.println("set - Set an attribute for an element");
-        System.out.println("select - Select an attribute value for an element");
-        System.out.println("xpath - Evaluate an XPath expression on an element");
-        System.out.println("Ydelete - Delete an attribute from an element");
-        System.out.println("Ylistchildren - List children of an element");
-        System.out.println("Yaddchild - Add a new child element");
-        System.out.println("Yaccesstext - Access text content of an element");
-        System.out.println("Yaccesschild - Access a specific child element");
-        System.out.println("Yhelp - Display help information");
-        System.out.println("Ycreatexml - Create a new XML file");
-        System.out.println("Yexit - Exit the program");
+        System.out.println("\nAvailable commands:\n" +
+                "open\n" +
+                "close\n" +
+                "save\n" +
+                "saveAs\n" +
+                "print\n" +
+                "set\n" +
+                "select\n" +
+                "xpath\n" +
+                "delete\n" +
+                "listchildren\n" +
+                "addchild\n" +
+                "accesstext\n" +
+                "accesschild\n" +
+                "help\n" +
+                "createxml\n" +
+                "exit");
         System.out.print("\nEnter command: ");
     }
 }

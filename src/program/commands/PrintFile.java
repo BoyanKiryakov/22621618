@@ -1,8 +1,8 @@
-package Commands;
+package program.commands;
 
-import Structure.CommandHandler;
-import Structure.XMLElement;
-import Menu.Menu;
+import program.structure.CommandHandler;
+import program.structure.XMLElement;
+import program.menu.Menu;
 
 public class PrintFile implements CommandHandler {
 
